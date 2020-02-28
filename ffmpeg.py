@@ -22,31 +22,28 @@ class ffmpeg_api():
 
         info = requests.get(profile_pic_url) #get the profile picture info
         twitterImg = Image.open(BytesIO(info.content)) #create the image
-        myBackground.paste(twitterImg, (475, 210)) #paste the profile picture image on the background
+        myBackground.paste(twitterImg, (75, 150)) #paste the profile picture image on the background
 
         #write twitter handle and tweet on the background
         draw = ImageDraw.Draw(myBackground)
-        draw.text((425, 150), '@'+twitter_handle, font=handleFont, fill="white")
+        draw.text((150, 150), '@'+twitter_handle, font=handleFont, fill="white")
         lines = textwrap.wrap(txt, width=120)
-        x = 50
-        y = 300
+        x = 75
+        y = 250
         for line in lines:
             draw.text(((x), y), line, font=tweetFont, fill="white")
-            y += 25
+            y += 30
         
         #save the final image in the images folder
         myBackground.save('./images/' + str(twitter_handle) + str(count) + '.png')
 
-    def createVideo(self, twitter_handle):
-        currentDate = str(datetime.date.today()).replace('-', '_') #get the current date to add it to the output video name
-        
+    def createVideo(self, twitter_handle):        
         try:
             subprocess.call(['/usr/local/bin/ffmpeg', '-y', '-r', '1/3', '-i', './images/'+twitter_handle+'%d.png', '-pix_fmt', 'yuv420p', '-r',
-            '25', '-loglevel', 'error', '-hide_banner', twitter_handle + '_twitter_feed_' + currentDate + '.mp4'],
+            '25', '-loglevel', 'error', '-hide_banner', twitter_handle + '_twitter_feed.mp4'],
             stdout=subprocess.DEVNULL, stdin=subprocess.DEVNULL) #launch a subprocess to create the video using the images created
-            print("Finished creating video! File at " + os.getcwd() + '/' + twitter_handle + '_' + r'/twitter_feed_' + currentDate + '.mp4')
+            print("vidoe created")
         except Exception as e:
             print("Uh oh, looks like there was an error creating the video")
             print(e)
-        
         return
