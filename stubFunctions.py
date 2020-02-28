@@ -1,10 +1,14 @@
 import random
 
 def generateResponse(tweetInfo):
-    response = {"twitter handle": tweetInfo[0], "tweet": tweetInfo[1], "date": tweetInfo[2], "likes": tweetInfo[3]}
+    response = {"twitter handle": tweetInfo[0], "tweet": tweetInfo[1], "date": tweetInfo[2], "likes": tweetInfo[3]} #format the api response
     return response
 
 def getTweets(handle):
+
+    #search for the twitter handle
+    #get hard coded tweet info including the tweet, date, and the number of likes
+
     if handle == "busnowtm":
         tweet = "Are you all ready for a great season? Make sure you check out our table at Splash this Saturday to get information about the upcoming season! See you then!"
         date = "Sep 5, 2018"
@@ -31,9 +35,9 @@ def getTweets(handle):
         return tweetInfo
 
 def getHandle():
-    availableHandles = ["busnowtm", "CNN", "cnni", "realDonaldTrump"]
-    idx = random.randrange(0, 3, 1)
-    return availableHandles[idx]
+    availableHandles = ["busnowtm", "CNN", "cnni", "realDonaldTrump"] #list of hard coded twitter handles
+    idx = random.randrange(0, 3, 1) #pick one of the handles
+    return availableHandles[idx] #return the chosen handle
 
 class stubFuncs():
 

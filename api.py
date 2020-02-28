@@ -20,8 +20,8 @@ def videoProcessor(handles, ffm):
     while(True):
         twitter_handle = handles.get() #get a twitter handle from the queue
         if twitter_handle is not None: #if there is a twitter handle in the queue
-            png_count = len(glob.glob1(r"images/", twitter_handle + r"*.png")) #check how many images are in the folder
-            if png_count < 20: #if there are less than 20 images, add the handle back to the queue
+            imgCount = len(glob.glob1(r"images/", twitter_handle + r"*.png")) #check how many images are in the folder
+            if imgCount < 20: #if there are less than 20 images, add the handle back to the queue
                 handles.put(twitter_handle)
             else: #if there are enough images to create a video
                 ffm.createVideo(twitter_handle) #create a video
