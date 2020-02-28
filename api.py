@@ -25,7 +25,7 @@ def videoProcessor(handles, ffm):
                 handles.put(twitter_handle)
             else: #if there are enough images to create a video
                 ffm.createVideo(twitter_handle) #create a video
-        handles.task_done()
+        handles.task_done() #unblock join call from addTweets function once all pictures have been added to the video
         time.sleep(0.5) #sleep for half a second
 
 def tweetsToPics(tweets, f):
@@ -34,7 +34,7 @@ def tweetsToPics(tweets, f):
         if nextTweet is not None: #if there is a tweet to convert
             f.createImage(nextTweet[0], nextTweet[1], nextTweet[2], nextTweet[3]) #convert tweet to an image
             #0 = handle, 1 = profile pic, 2 = tweet, 3 = count
-        tweets.task_done()
+        tweets.task_done() #unblock join call from addTweets function once all tweets have been turned to pictures
         time.sleep(0.5) #sleep for half a second
 
 def addTweets(tweetsQ, twitter_handle, profilePic, profileTweets):
