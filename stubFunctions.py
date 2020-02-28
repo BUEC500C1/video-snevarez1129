@@ -32,7 +32,6 @@ def getTweets(handle):
 
 def getHandle():
     availableHandles = ["busnowtm", "CNN", "cnni", "realDonaldTrump"]
-    print("No keys available!")
     idx = random.randrange(0, 3, 1)
     return availableHandles[idx]
 

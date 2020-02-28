@@ -2,6 +2,7 @@ from flask import Flask
 from flask_restful import reqparse, abort, Api, Resource
 
 import ffmpeg as ff
+import stubFunctions as stubs
 import twitter as twi
 
 import glob
@@ -25,7 +26,7 @@ def videoProcessor(handles, ffm):
             else: #if there are enough images to create a video
                 ffm.createVideo(twitter_handle) #create a video
         handles.task_done()
-        time.sleep(0.001)
+        time.sleep(0.5) #sleep for half a second
 
 def tweetsToPics(tweets, f):
     while(True):
@@ -34,7 +35,7 @@ def tweetsToPics(tweets, f):
             f.createImage(nextTweet[0], nextTweet[1], nextTweet[2], nextTweet[3]) #convert tweet to an image
             #0 = handle, 1 = profile pic, 2 = tweet, 3 = count
         tweets.task_done()
-        time.sleep(0.001)
+        time.sleep(0.5) #sleep for half a second
 
 def addTweets(tweetsQ, twitter_handle, profilePic, profileTweets):
     for count, tweet in enumerate(profileTweets): #create an image conversion request for each tweet
@@ -46,7 +47,14 @@ class Video(Resource):
     def get(self, twitter_handle):
         print("Let's begin")
         
-        t = twi.twitter_api("keys") #get twitter keys from keys file
+        try:
+            t = twi.twitter_api("keys") #get twitter keys from keys file
+        except:
+            print("No keys available!")
+            s = stubs.stubFuncs() #create an object for stubs, these will be run if there are no keys available
+            resp = s.noKeys()
+            return resp
+
         f = ff.ffmpeg_api() #create an ffmpeg object
 
         handles = queue.Queue() #create queue to hold twitter handles in the order the handle called the api
