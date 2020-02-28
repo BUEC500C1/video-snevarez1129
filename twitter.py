@@ -20,7 +20,7 @@ class twitter_api():
 
     def get_tweets(self, handle):
         try:
-            tweets = self.api.user_timeline(screen_name=handle, count=5)
+            tweets = self.api.user_timeline(screen_name=handle, count=20)
             return tweets
         except tweepy.error.TweepError as e:
             print(e)

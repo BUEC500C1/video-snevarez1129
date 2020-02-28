@@ -12,29 +12,41 @@ class ffmpeg_api():
     def __init__(self):
         pass #do nothing, just create object
 
-    def createImage(self, twitter_handle, profile_pic, tweet, count):
+    def createImage(self, twitter_handle, profile_pic_url, tweet, count):
 
         txt = tweet.text #get the text from the tweet
 
-        background = Image.new('RGBA', (1024, 768), (255, 75, 75, 255)) #create the background, a nice red color
-        font = ImageFont.truetype(r'font/Comic Sans MS.ttf', 16) #create the font for the text
+        myBackground = Image.new('RGBA', (1024, 512), (255, 75, 75, 200)) #create a background for the image
+        handleFont = ImageFont.truetype(r'font/Comic Sans MS.ttf', 30) #create the font for the handle
+        tweetFont = ImageFont.truetype(r'font/Comic Sans MS.ttf', 16) #create the font for the tweet
 
-        response = requests.get(profile_pic) #get the profile picture info
-        img = Image.open(BytesIO(response.content)) #create the image
+        info = requests.get(profile_pic_url) #get the profile picture info
+        twitterImg = Image.open(BytesIO(info.content)) #create the image
+        myBackground.paste(twitterImg, (475, 210)) #paste the profile picture image on the background
 
-        draw = ImageDraw.Draw(background)
-        background.paste(img, (50, 150)) #paste the profile picture image on the background
-
-        #create twitter tweet text wrapped
+        #write twitter handle and tweet on the background
+        draw = ImageDraw.Draw(myBackground)
+        draw.text((425, 150), '@'+twitter_handle, font=handleFont, fill="white")
         lines = textwrap.wrap(txt, width=120)
-        x, y = 50, 225
+        x = 50
+        y = 300
         for line in lines:
-            draw.text(((x), y), line, font=font, fill="white")
+            draw.text(((x), y), line, font=tweetFont, fill="white")
             y += 25
-        draw.text((120, 170), twitter_handle, font=font, fill="white")
         
-        #draw final image with tweet and user profile, etc
-        background.save('./processed_imgs/' + str(twitter_handle) + str(count) + '.png')
+        #save the final image in the images folder
+        myBackground.save('./images/' + str(twitter_handle) + str(count) + '.png')
 
     def createVideo(self, twitter_handle):
+        currentDate = str(datetime.date.today()).replace('-', '_') #get the current date to add it to the output video name
+        
+        try:
+            subprocess.call(['/usr/local/bin/ffmpeg', '-y', '-r', '1/3', '-i', './images/'+twitter_handle+'%d.png', '-pix_fmt', 'yuv420p', '-r',
+            '25', '-loglevel', 'error', '-hide_banner', twitter_handle + '_twitter_feed_' + currentDate + '.mp4'],
+            stdout=subprocess.DEVNULL, stdin=subprocess.DEVNULL) #launch a subprocess to create the video using the images created
+            print("Finished creating video! File at " + os.getcwd() + '/' + twitter_handle + '_' + r'/twitter_feed_' + currentDate + '.mp4')
+        except Exception as e:
+            print("Uh oh, looks like there was an error creating the video")
+            print(e)
+        
         return
