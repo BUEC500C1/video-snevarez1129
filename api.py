@@ -9,13 +9,14 @@ import os
 import os.path
 import queue
 import requests
+import threading
 import time
 
 app = Flask(__name__)
 api = Api(app)
 
 def generateRespone():
-    resp = []
+    resp = {"almost": "done"}
     return resp
 
 def videoProcessor(handles, ffm):
@@ -26,7 +27,9 @@ def videoProcessor(handles, ffm):
             handles.put(twitter_handle)
         else: #if there are enough images to create a video
             ffm.createVideo(twitter_handle) #create a video
-    return
+    handles.task_done()
+    time.sleep(0.001)
+    #return
 
 def tweetsToPics(tweets, f):
     count = 0
@@ -36,12 +39,15 @@ def tweetsToPics(tweets, f):
         if nextTweet is not None: #if there is a tweet to convert
             f.createImage(nextTweet[0], nextTweet[1], nextTweet[2], nextTweet[3]) #convert tweet to an image
             #0 = handle, 1 = profile pic, 2 = tweet, 3 = count
-    return
+    tweets.task_done()
+    time.sleep(0.001)
+    #return
 
 def addTweets(tweetsQ, twitter_handle, profilePic, profileTweets):
     for count, tweet in enumerate(profileTweets): #create an image conversion request for each tweet
         tweetsQ.put([twitter_handle, profilePic, tweet, count]) #add the request to the queue
-    return
+    tweetsQ.join() #block until all tweets have been turned into images
+    #return
 
 class Video(Resource):
 
@@ -58,11 +64,19 @@ class Video(Resource):
         profilePic = t.get_profilePic(twitter_handle) #get the users profile picture
         profileTweets = t.get_tweets(twitter_handle) #get the users tweets
 
-        addTweets(tweets, twitter_handle, profilePic, profileTweets) #add tweets to tweets queue to create images in chronological order of the tweets
-        tweetsToPics(tweets, f) #convert tweets to images
-        videoProcessor(handles, f) #convert the images to a video
-        resp = generateRespone() #create json response for api call
+        #addTweets(tweets, twitter_handle, profilePic, profileTweets) #add tweets to tweets queue to create images in chronological order of the tweets
+        t = threading.Thread(name="producer", target=addTweets, args=(tweets, twitter_handle, profilePic, profileTweets))
+        t.start()
 
+        #tweetsToPics(tweets, f) #convert tweets to images
+        t = threading.Thread(name="imageConverter", target=tweetsToPics, args=(tweets, f))
+        t.start()
+
+        #videoProcessor(handles, f) #convert the images to a video
+        t = threading.Thread(name="videoCreator", target=videoProcessor, args=(handles, f))
+        t.start()
+        
+        resp = generateRespone() #create json response for api call
         return resp
 
 #Resources
