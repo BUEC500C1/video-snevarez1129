@@ -6,8 +6,10 @@ For this project, I created an API that would get a user's twitter feed and crea
 
 ## How to Run:
 
-To create my API I used Flask framework, so to call the api first run the file, api.py on your machine. In a new terminal window, run the command
+To create my API I used Flask framework, so to call the api first run the file api.py on your machine. In a new terminal window, run the command
 
 `curl http://127.0.0.1:5000/<twitter_handle>`
 
 The API uses a file called "keys" in the root directory of the project. This file contains the autentication keys to use Twitter to get tweets. If no keys are available, the program runs a series of stub functions that return hard coded data. For my stub functions, I selected 4 Twitter users that are selected at random each time an API call is made and returns a hard coded tweet made by that user.
+
+The API creates a video of the twitter_handle that is passed to it in the API call and the video is stored in the root directory of the project. The API also gives a response letting the user know where the video was saved.
