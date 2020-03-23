@@ -5,10 +5,7 @@ def generateResponse(tweetInfo):
     return response
 
 def getTweets(handle):
-
-    #search for the twitter handle
-    #get hard coded tweet info including the tweet, date, and the number of likes
-
+    #search for the twitter handle and get hard coded tweet info including the tweet, date, and the number of likes
     if handle == "busnowtm":
         tweet = "Are you all ready for a great season? Make sure you check out our table at Splash this Saturday to get information about the upcoming season! See you then!"
         date = "Sep 5, 2018"

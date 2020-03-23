@@ -10,7 +10,7 @@ import textwrap
 class ffmpeg_api():
 
     def __init__(self):
-        pass #do nothing, just create object
+        pass #create object
 
     def createImage(self, twitter_handle, profile_pic_url, tweet, count):
 
@@ -26,24 +26,27 @@ class ffmpeg_api():
 
         myDrawing = ImageDraw.Draw(myBackground) #create drawing
         myDrawing.text((150, 150), '@'+twitter_handle, font=handleFont, fill="white") #write twitter handle on the drawing
-        lines = textwrap.wrap(txt, width=100) #define size of a line
+
         x = 75 #x coord for start of text
         y = 250 #y coord for start of text
+        lines = textwrap.wrap(txt, width=100) #define size of a line
+        
         for line in lines:
             myDrawing.text(((x), y), line, font=tweetFont, fill="white") #write tweet on the drawing
             y += 30 #move to next line
-        
-        #save the final image in the images folder
-        myBackground.save('./images/' + str(twitter_handle) + str(count) + '.png')
+
+        myBackground.save('./imageFiles/' + str(twitter_handle) + str(count) + '.png') #save the image in the images folder
 
     def createVideo(self, twitter_handle):        
+        cmd = ['ffmpeg', '-y', '-r', '1/3', '-i', './imageFiles/'+twitter_handle+'%d.png', '-pix_fmt', 'yuv420p', '-r',
+        '25', '-loglevel', 'error', '-hide_banner', twitter_handle + '_twitter_feed.mp4']
+
         try:
             #launch a subprocess to create the video using the images created
-            subprocess.call(['/usr/local/bin/ffmpeg', '-y', '-r', '1/3', '-i', './images/'+twitter_handle+'%d.png', '-pix_fmt', 'yuv420p', '-r',
-            '25', '-loglevel', 'error', '-hide_banner', twitter_handle + '_twitter_feed.mp4'],
-            stdout=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
+            subprocess.call(cmd, stdout=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
             print("Video created!")
         except Exception as e:
             print("Uh oh, looks like there was an error creating the video")
             print(e)
+        
         return
