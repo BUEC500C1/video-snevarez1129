@@ -12,9 +12,6 @@ Using the twitter feed, construct a daily video summarizing a twitter handle day
 How many API calls you can handle simultaneously and why?
 * Given that my machine has an 16-core processor, it should handle 8 simultaneous API calls.
 
-For example, run different API calls at the same time?
-* This API can run more than one API call at the same time.
-
 Split the processing of an API into multiple threads?
 * This API was split into 3 threads, one to get a user's tweets, one to create images of the tweets, and one to turn the images into a video.
 
